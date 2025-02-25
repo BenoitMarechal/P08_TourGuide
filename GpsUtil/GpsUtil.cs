@@ -25,7 +25,7 @@ public class GpsUtil
             double latitude = ThreadLocalRandom.NextDouble(-90, 90);
             latitude = Math.Round(latitude, 6);
 
-            VisitedLocation visitedLocation = new(userId, new Locations(latitude, longitude), DateTime.UtcNow);
+            VisitedLocation visitedLocation = new(userId, new Location.Location(latitude, longitude), DateTime.UtcNow);
 
             return visitedLocation;
         }

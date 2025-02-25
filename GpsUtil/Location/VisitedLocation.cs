@@ -9,10 +9,10 @@ namespace GpsUtil.Location;
 public class VisitedLocation
 {
     public Guid UserId { get; }
-    public Locations Location { get; }
+    public Location Location { get; }
     public DateTime TimeVisited { get; }
 
-    public VisitedLocation(Guid userId, Locations location, DateTime timeVisited)
+    public VisitedLocation(Guid userId, Location location, DateTime timeVisited)
     {
         UserId = userId;
         Location = location;

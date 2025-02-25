@@ -53,7 +53,7 @@ public class RewardsService : IRewardsService
         }
     }
 
-    public bool IsWithinAttractionProximity(Attraction attraction, Locations location)
+    public bool IsWithinAttractionProximity(Attraction attraction, Location location)
     {
         Console.WriteLine(GetDistance(attraction, location));
         return GetDistance(attraction, location) <= _attractionProximityRange;
@@ -69,7 +69,7 @@ public class RewardsService : IRewardsService
         return _rewardsCentral.GetAttractionRewardPoints(attraction.AttractionId, user.UserId);
     }
 
-    public double GetDistance(Locations loc1, Locations loc2)
+    public double GetDistance(Location loc1, Location loc2)
     {
         double lat1 = Math.PI * loc1.Latitude / 180.0;
         double lon1 = Math.PI * loc1.Longitude / 180.0;

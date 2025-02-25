@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace GpsUtil.Location;
 
-public class Locations
+public class Location
 {
     public double Longitude { get; }
     public double Latitude { get; }
 
-    public Locations(double latitude, double longitude)
+    public Location(double latitude, double longitude)
     {
         Latitude = latitude;
         Longitude = longitude;

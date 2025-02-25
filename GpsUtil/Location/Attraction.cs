@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace GpsUtil.Location;
 
-public class Attraction : Locations
+public class Attraction : Location
 {
     public string AttractionName { get; }
     public string City { get; }

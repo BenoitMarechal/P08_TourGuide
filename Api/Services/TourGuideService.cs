@@ -132,7 +132,7 @@ public class TourGuideService : ITourGuideService
     {
         for (int i = 0; i < 3; i++)
         {
-            var visitedLocation = new VisitedLocation(user.UserId, new Locations(GenerateRandomLatitude(), GenerateRandomLongitude()), GetRandomTime());
+            var visitedLocation = new VisitedLocation(user.UserId, new Location(GenerateRandomLatitude(), GenerateRandomLongitude()), GetRandomTime());
             user.AddToVisitedLocations(visitedLocation);
         }
     }
