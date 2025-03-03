@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 using System.Globalization;
+using TourGuide.LibrairiesWrappers;
 using TourGuide.LibrairiesWrappers.Interfaces;
 using TourGuide.Services.Interfaces;
 using TourGuide.Users;
@@ -90,18 +91,26 @@ public class TourGuideService : ITourGuideService
         return visitedLocation;
     }
 
-    public List<Attraction> GetNearByAttractions(VisitedLocation visitedLocation)
+    public List<NearByAttraction> GetNearByAttractions(VisitedLocation visitedLocation, User user)
     {
-        List<Attraction> nearbyAttractions = new ();
+        List<NearByAttraction> nearbyAttractions = new ();
+
         foreach (var attraction in _gpsUtil.GetAttractions())
         {
-            if (_rewardsService.IsWithinAttractionProximity(attraction, visitedLocation.Location))
-            {
-                nearbyAttractions.Add(attraction);
-            }
-        }
+            //if (_rewardsService.IsWithinAttractionProximity(attraction, visitedLocation.Location))
+            //    {
+                var attractionLocation = new Location(attraction.Latitude, attraction.Longitude);
+                var userLocation = GetUserLocation(user).Location;               
+                var distance = _rewardsService.GetDistance(attractionLocation, userLocation);
+                var rewardWrapper = new RewardCentralWrapper();
+                var reward = rewardWrapper.GetAttractionRewardPoints(attraction.AttractionId, user.UserId);
+                var nearbyAttraction = new NearByAttraction(attraction, userLocation, distance, reward);            
 
-        return nearbyAttractions;
+                nearbyAttractions.Add(nearbyAttraction);
+           // }
+        }   
+
+        return nearbyAttractions.OrderBy(a=>a.Distance).Take(5).ToList();
     }
 
     private void AddShutDownHook()
@@ -153,4 +162,5 @@ public class TourGuideService : ITourGuideService
     {
         return DateTime.UtcNow.AddDays(-new Random().Next(30));
     }
+ 
 }

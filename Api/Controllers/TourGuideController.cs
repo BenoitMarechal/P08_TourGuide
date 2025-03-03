@@ -32,12 +32,13 @@ public class TourGuideController : ControllerBase
     // The user's location lat/long, 
     // The distance in miles between the user's location and each of the attractions.
     // The reward points for visiting each Attraction.
-    //    Note: Attraction reward points can be gathered from RewardsCentral
+    // Note: Attraction reward points can be gathered from RewardsCentral
     [HttpGet("getNearbyAttractions")]
-    public ActionResult<List<Attraction>> GetNearbyAttractions([FromQuery] string userName)
+    public ActionResult<List<NearByAttraction>> GetNearbyAttractions([FromQuery] string userName)
     {
         var visitedLocation = _tourGuideService.GetUserLocation(GetUser(userName));
-        var attractions = _tourGuideService.GetNearByAttractions(visitedLocation);
+        var attractions = _tourGuideService.GetNearByAttractions(visitedLocation, GetUser(userName));
+
         return Ok(attractions);
     }
 

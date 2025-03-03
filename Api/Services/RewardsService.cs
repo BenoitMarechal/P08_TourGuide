@@ -55,6 +55,7 @@ public class RewardsService : IRewardsService
 
     public bool IsWithinAttractionProximity(Attraction attraction, Location location)
     {
+        Console.WriteLine("dist");
         Console.WriteLine(GetDistance(attraction, location));
         return GetDistance(attraction, location) <= _attractionProximityRange;
     }
@@ -64,7 +65,7 @@ public class RewardsService : IRewardsService
         return GetDistance(attraction, visitedLocation.Location) <= _proximityBuffer;
     }
 
-    private int GetRewardPoints(Attraction attraction, User user)
+    public int GetRewardPoints(Attraction attraction, User user)
     {
         return _rewardsCentral.GetAttractionRewardPoints(attraction.AttractionId, user.UserId);
     }
