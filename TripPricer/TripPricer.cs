@@ -12,12 +12,24 @@ public class TripPricer
     public List<Provider> GetPrice(string apiKey, Guid attractionId, int adults, int children, int nightsStay, int rewardsPoints)
     {
         List<Provider> providers = new List<Provider>();
+
         HashSet<string> providersUsed = new HashSet<string>();
+        // Pre-generate a shuffled list of provider names
+
+
+        List<string> providerNames = new List<string>
+    {
+        "Holiday Travels", "Enterprize Ventures Limited", "Sunny Days", "FlyAway Trips",
+        "United Partners Vacations", "Dream Trips", "Live Free", "Dancing Waves Cruselines and Partners",
+        "AdventureCo", "Cure-Your-Blues"
+    };
+
+        providerNames = providerNames.OrderBy(_ => ThreadLocalRandom.Current.Next()).ToList();
 
         // Sleep to simulate some latency
         Thread.Sleep(ThreadLocalRandom.Current.Next(1, 50));
 
-        for (int i = 0; i < 5; i++)
+        for (int i = 0; i < 10; i++)
         {
             int multiple = ThreadLocalRandom.Current.Next(100, 700);
             double childrenDiscount = children / 3.0;
@@ -28,19 +40,15 @@ public class TripPricer
                 price = 0.0;
             }
 
-            string provider;
-            do
-            {
-                provider = GetProviderName(apiKey, adults);
-            } while (providersUsed.Contains(provider));
+            // Pick a unique provider without looping infinitely
+            string provider = providerNames[i]; // No duplicates possible
 
-            providersUsed.Add(provider);
             providers.Add(new Provider(attractionId, provider, price));
         }
         return providers;
     }
 
-    public string GetProviderName(string apiKey, int adults)
+    public string GetProviderName()
     {
         int multiple = ThreadLocalRandom.Current.Next(1, 10);
 
@@ -55,7 +63,7 @@ public class TripPricer
             7 => "Live Free",
             8 => "Dancing Waves Cruselines and Partners",
             9 => "AdventureCo",
-            _ => "Cure-Your-Blues",
+            10 => "Cure-Your-Blues",
         };        
     }
 }

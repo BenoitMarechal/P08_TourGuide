@@ -97,17 +97,13 @@ public class TourGuideService : ITourGuideService
 
         foreach (var attraction in _gpsUtil.GetAttractions())
         {
-            //if (_rewardsService.IsWithinAttractionProximity(attraction, visitedLocation.Location))
-            //    {
                 var attractionLocation = new Location(attraction.Latitude, attraction.Longitude);
                 var userLocation = GetUserLocation(user).Location;               
                 var distance = _rewardsService.GetDistance(attractionLocation, userLocation);
                 var rewardWrapper = new RewardCentralWrapper();
                 var reward = rewardWrapper.GetAttractionRewardPoints(attraction.AttractionId, user.UserId);
-                var nearbyAttraction = new NearByAttraction(attraction, userLocation, distance, reward);            
-
+                var nearbyAttraction = new NearByAttraction(attraction, userLocation, distance, reward);           
                 nearbyAttractions.Add(nearbyAttraction);
-           // }
         }   
 
         return nearbyAttractions.OrderBy(a=>a.Distance).Take(5).ToList();
