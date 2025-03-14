@@ -20,44 +20,60 @@ public class TourGuideController : ControllerBase
     [HttpGet("getLocation")]
     public ActionResult<VisitedLocation> GetLocation([FromQuery] string userName)
     {
-        var location = _tourGuideService.GetUserLocation(GetUser(userName));
+        var user = _tourGuideService.GetUser(userName);
+        if (user == null)
+        {
+            return NotFound("User not found");
+        }
+
+        var location = _tourGuideService.GetUserLocation(user);
         return Ok(location);
     }
 
-    // TODO: Change this method to no longer return a List of Attractions.
-    // Instead: Get the closest five tourist attractions to the user - no matter how far away they are.
-    // Return a new JSON object that contains:
-    // Name of Tourist attraction, 
-    // Tourist attractions lat/long, 
-    // The user's location lat/long, 
-    // The distance in miles between the user's location and each of the attractions.
-    // The reward points for visiting each Attraction.
-    // Note: Attraction reward points can be gathered from RewardsCentral
     [HttpGet("getNearbyAttractions")]
     public ActionResult<List<NearByAttraction>> GetNearbyAttractions([FromQuery] string userName)
     {
-        var visitedLocation = _tourGuideService.GetUserLocation(GetUser(userName));
-        var attractions = _tourGuideService.GetNearByAttractions(visitedLocation, GetUser(userName));
+        var user = _tourGuideService.GetUser(userName);
+        if (user == null)
+        {
+            return NotFound("User not found");
+        }
 
+
+        var visitedLocation = _tourGuideService.GetUserLocation(user);
+        var attractions = _tourGuideService.GetNearByAttractions(visitedLocation, GetUser(userName));
         return Ok(attractions);
     }
 
     [HttpGet("getRewards")]
     public ActionResult<List<UserReward>> GetRewards([FromQuery] string userName)
     {
-        var rewards = _tourGuideService.GetUserRewards(GetUser(userName));
+        var user = _tourGuideService.GetUser(userName);
+        if (user == null)
+        {
+            return NotFound("User not found");
+        }
+
+        var rewards = _tourGuideService.GetUserRewards(user);
         return Ok(rewards);
     }
 
     [HttpGet("getTripDeals")]
     public ActionResult<List<Provider>> GetTripDeals([FromQuery] string userName)
     {
-        var deals = _tourGuideService.GetTripDeals(GetUser(userName));
+        var user = _tourGuideService.GetUser(userName);
+        if (user == null)
+        {
+            return NotFound("User not found");
+        }
+
+        var deals = _tourGuideService.GetTripDeals(user);
         return Ok(deals);
     }
 
     private User GetUser(string userName)
-    {
+    {       
         return _tourGuideService.GetUser(userName);
     }
+  
 }
