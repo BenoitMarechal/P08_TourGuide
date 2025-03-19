@@ -32,13 +32,38 @@ public class RewardsService : IRewardsService
         _proximityBuffer = _defaultProximityBuffer;
     }
 
+    //public void CalculateRewards(User user)
+    //{
+
+    //    count++;
+    //    List<VisitedLocation> userLocations = user.VisitedLocations;
+
+    //    List<Attraction> attractions = _gpsUtil.GetAttractions();
+
+    //    foreach (var visitedLocation in userLocations)
+    //    {
+    //        foreach (var attraction in attractions)
+    //        {
+    //            if (!user.UserRewards.Any(r => r.Attraction.AttractionName == attraction.AttractionName))
+    //            {
+    //                if (NearAttraction(visitedLocation, attraction))
+    //                {
+    //                    user.AddUserReward(new UserReward(visitedLocation, attraction, GetRewardPoints(attraction, user)));
+    //                }
+    //            }
+    //        }
+    //    }
+    //}
     public void CalculateRewards(User user)
     {
         count++;
-        List<VisitedLocation> userLocations = user.VisitedLocations;
+
+        // Create a snapshot of the visited locations to avoid modification issues
+        List<VisitedLocation> userLocationsSnapshot = user.VisitedLocations.ToList();
+
         List<Attraction> attractions = _gpsUtil.GetAttractions();
 
-        foreach (var visitedLocation in userLocations)
+        foreach (var visitedLocation in userLocationsSnapshot)
         {
             foreach (var attraction in attractions)
             {
@@ -52,6 +77,7 @@ public class RewardsService : IRewardsService
             }
         }
     }
+
 
     public bool IsWithinAttractionProximity(Attraction attraction, Location location)
     {
