@@ -23,7 +23,7 @@ public class TourGuideService : ITourGuideService
     private bool _testMode = true;
 
     public TourGuideService(ILogger<TourGuideService> logger, IGpsUtil gpsUtil, IRewardsService rewardsService, ILoggerFactory loggerFactory)
-    {
+    { 
         _logger = logger;
         _tripPricer = new();
         _gpsUtil = gpsUtil;
@@ -45,7 +45,7 @@ public class TourGuideService : ITourGuideService
         AddShutDownHook();
     }
 
-    public List<UserReward> GetUserRewards(User user)
+    public async Task<List<UserReward>> GetUserRewards(User user)
     {
         return user.UserRewards;
     }
@@ -55,7 +55,7 @@ public class TourGuideService : ITourGuideService
         return user.VisitedLocations.Any() ? user.GetLastVisitedLocation() : TrackUserLocation(user);
     }
 
-    public User GetUser(string userName)
+    public async Task<User> GetUser(string userName)
     {
         return _internalUserMap.ContainsKey(userName) ? _internalUserMap[userName] : null;
     }
@@ -73,19 +73,25 @@ public class TourGuideService : ITourGuideService
         }
     }
 
-    public List<Provider> GetTripDeals(User user)
+
+
+    public async Task<List<Provider>> GetTripDeals(User user)
     {
         int cumulativeRewardPoints = user.UserRewards.Sum(i => i.RewardPoints);
-        List<Provider> providers = _tripPricer.GetPrice(TripPricerApiKey, user.UserId,
-            user.UserPreferences.NumberOfAdults, user.UserPreferences.NumberOfChildren,
-            user.UserPreferences.TripDuration, cumulativeRewardPoints);
+
+        List<Provider> providers = await Task.Run(() =>
+            _tripPricer.GetPrice(TripPricerApiKey, user.UserId,
+                user.UserPreferences.NumberOfAdults, user.UserPreferences.NumberOfChildren,
+                user.UserPreferences.TripDuration, cumulativeRewardPoints));
+
         user.TripDeals = providers;
         return providers;
     }
 
+
     public VisitedLocation TrackUserLocation(User user)
     {
-        VisitedLocation visitedLocation = _gpsUtil.GetUserLocation(user.UserId);
+        VisitedLocation visitedLocation =  _gpsUtil.GetUserLocation(user.UserId);
         user.AddToVisitedLocations(visitedLocation);
         _rewardsService.CalculateRewards(user);
         return visitedLocation;
