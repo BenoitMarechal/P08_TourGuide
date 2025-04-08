@@ -50,7 +50,7 @@ public class TourGuideService : ITourGuideService
         return user.UserRewards;
     }
 
-    public VisitedLocation GetUserLocation(User user)
+    public async Task<VisitedLocation> GetUserLocation(User user)
     {
         return user.VisitedLocations.Any() ? user.GetLastVisitedLocation() : TrackUserLocation(user);
     }
@@ -60,7 +60,7 @@ public class TourGuideService : ITourGuideService
         return _internalUserMap.ContainsKey(userName) ? _internalUserMap[userName] : null;
     }
 
-    public List<User> GetAllUsers()
+    public async Task<List<User>> GetAllUsers()
     {
         return _internalUserMap.Values.ToList();
     }
@@ -97,18 +97,17 @@ public class TourGuideService : ITourGuideService
         return visitedLocation;
     }
 
-    public List<NearByAttraction> GetNearByAttractions(VisitedLocation visitedLocation, User user)
+    public async Task<List<NearByAttraction>> GetNearByAttractions(VisitedLocation visitedLocation, User user)
     {
         List<NearByAttraction> nearbyAttractions = new ();
-
+        var userLocation = await GetUserLocation(user);        
         foreach (var attraction in _gpsUtil.GetAttractions())
         {
                 var attractionLocation = new Location(attraction.Latitude, attraction.Longitude);
-                var userLocation = GetUserLocation(user).Location;               
-                var distance = _rewardsService.GetDistance(attractionLocation, userLocation);
+                var distance =  _rewardsService.GetDistance(attractionLocation, userLocation.Location);
                 var rewardWrapper = new RewardCentralWrapper();
                 var reward = rewardWrapper.GetAttractionRewardPoints(attraction.AttractionId, user.UserId);
-                var nearbyAttraction = new NearByAttraction(attraction, userLocation, distance, reward);           
+                var nearbyAttraction = new NearByAttraction(attraction, userLocation.Location, distance, reward);           
                 nearbyAttractions.Add(nearbyAttraction);
         }   
 

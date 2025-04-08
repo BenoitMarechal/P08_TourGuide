@@ -11,14 +11,13 @@ namespace TourGuide.Services.Interfaces
         Tracker Tracker { get; }
 
         void AddUser(User user);
-        List<User> GetAllUsers();
-        // List<NearByAttraction> GetNearByAttractions(VisitedLocation visitedLocation);
+        Task<List<User>>GetAllUsers();        
 
-        List<NearByAttraction> GetNearByAttractions(VisitedLocation visitedLocation, User user);
-        //List<Provider> GetTripDeals(User user);
+        Task<List<NearByAttraction>> GetNearByAttractions(VisitedLocation visitedLocation, User user);
+       
         Task<List<Provider>> GetTripDeals(User user);
         Task<User> GetUser(string userName);
-        VisitedLocation GetUserLocation(User user);
+        Task<VisitedLocation> GetUserLocation(User user);
         Task<List<UserReward>> GetUserRewards(User user);
         VisitedLocation TrackUserLocation(User user);
     }

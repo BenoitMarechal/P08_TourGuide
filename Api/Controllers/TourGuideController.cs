@@ -37,9 +37,8 @@ public class TourGuideController : ControllerBase
         {
             return NotFound("User not found");
         }
-
-        var visitedLocation =  _tourGuideService.GetUserLocation(user);
-        var attractions = _tourGuideService.GetNearByAttractions(visitedLocation, await  GetUser(userName));
+        var visitedLocation = await _tourGuideService.GetUserLocation(user);
+        var attractions = _tourGuideService.GetNearByAttractions(visitedLocation, await GetUser(userName));
         return Ok(attractions);
     }
 
@@ -51,7 +50,6 @@ public class TourGuideController : ControllerBase
         {
             return NotFound("User not found");
         }
-
         var rewards = _tourGuideService.GetUserRewards(user);
         return Ok(rewards);
     }
