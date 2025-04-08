@@ -86,13 +86,13 @@ namespace TourGuideTest
         }
      
         [Fact]
-        public void GetNearbyAttractions()
+        public async void GetNearbyAttractions()
         {
             _fixture.Initialize(0);
             var user = new User(Guid.NewGuid(), "jon", "000", "jon@tourGuide.com");
             var visitedLocation = _fixture.TourGuideService.TrackUserLocation(user);
 
-            List<NearByAttraction> attractions = _fixture.TourGuideService.GetNearByAttractions(visitedLocation, user);
+            List<NearByAttraction> attractions = await _fixture.TourGuideService.GetNearByAttractions(visitedLocation, user);
 
             _fixture.TourGuideService.Tracker.StopTracking();
 
