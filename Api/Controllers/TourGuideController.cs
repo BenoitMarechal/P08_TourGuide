@@ -25,7 +25,7 @@ public class TourGuideController : ControllerBase
         {
             return NotFound("User not found");
         }
-        var location =  _tourGuideService.GetUserLocation(user);
+        var location = await _tourGuideService.GetUserLocation(user);
         return Ok(location);
     }
 

@@ -56,7 +56,7 @@ namespace TourGuideTest
         }
 
         [Fact]
-        public void GetAllUsers()
+        public async void GetAllUsers()
         {
             _fixture.Initialize(0);
             var user = new User(Guid.NewGuid(), "jon", "000", "jon@tourGuide.com");
@@ -65,7 +65,7 @@ namespace TourGuideTest
             _fixture.TourGuideService.AddUser(user);
             _fixture.TourGuideService.AddUser(user2);
 
-            List<User> allUsers = _fixture.TourGuideService.GetAllUsers();
+            List<User> allUsers = await _fixture.TourGuideService.GetAllUsers();
 
             _fixture.TourGuideService.Tracker.StopTracking();
 
