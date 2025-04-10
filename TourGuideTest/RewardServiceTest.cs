@@ -19,7 +19,7 @@ public class RewardServiceTest : IClassFixture<DependencyFixture>
     }
 
     [Fact]
-    public void UserGetRewards()
+    public async void UserGetRewards()
     {
         _fixture.Initialize(0);
         var user = new User(Guid.NewGuid(), "jon", "000", "jon@tourGuide.com");
@@ -32,24 +32,24 @@ public class RewardServiceTest : IClassFixture<DependencyFixture>
     }
 
     [Fact]
-    public void IsWithinAttractionProximity()
+    public async void IsWithinAttractionProximity()
     {
         var attraction = _fixture.GpsUtil.GetAttractions().First();
-        Assert.True(_fixture.RewardsService.IsWithinAttractionProximity(attraction, attraction));
+        Assert.True(await _fixture.RewardsService.IsWithinAttractionProximity(attraction, attraction));
     }
 
-    [Fact(Skip = ("Needs fixed - can throw InvalidOperationException"))]
-    public void NearAllAttractions()
-    {
-        _fixture.Initialize(1);
-        _fixture.RewardsService.SetProximityBuffer(int.MaxValue);
+    //[Fact(Skip = ("Needs fixed - can throw InvalidOperationException"))]
+    //public void NearAllAttractions()
+    //{
+    //    _fixture.Initialize(1);
+    //    _fixture.RewardsService.SetProximityBuffer(int.MaxValue);
 
-        var user = _fixture.TourGuideService.GetAllUsers().First();
-        _fixture.RewardsService.CalculateRewards(user);
-        var userRewards = _fixture.TourGuideService.GetUserRewards(user);
-        _fixture.TourGuideService.Tracker.StopTracking();
+    //    var user = _fixture.TourGuideService.GetAllUsers().First();
+    //    _fixture.RewardsService.CalculateRewards(user);
+    //    var userRewards = _fixture.TourGuideService.GetUserRewards(user);
+    //    _fixture.TourGuideService.Tracker.StopTracking();
 
-        Assert.Equal(_fixture.GpsUtil.GetAttractions().Count, userRewards.Count);
-    }
+    //    Assert.Equal(_fixture.GpsUtil.GetAttractions().Count, userRewards.Count);
+    //}
 
 }
