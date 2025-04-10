@@ -52,7 +52,8 @@ public class TourGuideService : ITourGuideService
 
     public async Task<VisitedLocation> GetUserLocation(User user)
     {
-        return user.VisitedLocations.Any() ? user.GetLastVisitedLocation() : TrackUserLocation(user);
+        var trackedLocation=await TrackUserLocation(user);
+        return user.VisitedLocations.Any() ? user.GetLastVisitedLocation() : trackedLocation;
     }
 
     public async Task<User> GetUser(string userName)
@@ -89,9 +90,10 @@ public class TourGuideService : ITourGuideService
     }
 
 
-    public VisitedLocation TrackUserLocation(User user)
+    public async Task<VisitedLocation> TrackUserLocation(User user)
     {
         VisitedLocation visitedLocation =  _gpsUtil.GetUserLocation(user.UserId);
+
         user.AddToVisitedLocations(visitedLocation);
         _rewardsService.CalculateRewards(user);
         return visitedLocation;

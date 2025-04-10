@@ -19,6 +19,6 @@ namespace TourGuide.Services.Interfaces
         Task<User> GetUser(string userName);
         Task<VisitedLocation> GetUserLocation(User user);
         Task<List<UserReward>> GetUserRewards(User user);
-        VisitedLocation TrackUserLocation(User user);
+        Task<VisitedLocation> TrackUserLocation(User user);
     }
 }
