@@ -65,7 +65,7 @@ public class TourGuideService : ITourGuideService
         return _internalUserMap.Values.ToList();
     }
 
-    public void AddUser(User user)
+    public async Task AddUser(User user)
     {
         if (!_internalUserMap.ContainsKey(user.UserName))
         {
