@@ -39,7 +39,7 @@ public class RewardsService : IRewardsService
         // Create a snapshot of the visited locations to avoid modification issues
         List<VisitedLocation> userLocationsSnapshot = user.VisitedLocations.ToList();
 
-        List<Attraction> attractions = _gpsUtil.GetAttractions();
+        List<Attraction> attractions = await _gpsUtil.GetAttractions();
 
         foreach (var visitedLocation in userLocationsSnapshot)
         {
@@ -50,7 +50,7 @@ public class RewardsService : IRewardsService
                     var nearAttraction = await NearAttraction(visitedLocation, attraction);
                     if (nearAttraction)
                     {
-                        user.AddUserReward(new UserReward(visitedLocation, attraction, GetRewardPoints(attraction, user)));
+                        user.AddUserReward(new UserReward(visitedLocation, attraction, await GetRewardPoints(attraction, user)));
                     }
                 }
             }
@@ -73,9 +73,10 @@ public class RewardsService : IRewardsService
         return result <= _proximityBuffer;
     }
 
-    public int GetRewardPoints(Attraction attraction, User user)
+    public async Task<int> GetRewardPoints(Attraction attraction, User user)
     {
-        return _rewardsCentral.GetAttractionRewardPoints(attraction.AttractionId, user.UserId);
+        var result= await _rewardsCentral.GetAttractionRewardPoints(attraction.AttractionId, user.UserId);
+        return result;
     }
 
     public double GetDistance(Location loc1, Location loc2)

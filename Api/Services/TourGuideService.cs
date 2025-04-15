@@ -92,7 +92,7 @@ public class TourGuideService : ITourGuideService
 
     public async Task<VisitedLocation> TrackUserLocation(User user)
     {
-        VisitedLocation visitedLocation =  _gpsUtil.GetUserLocation(user.UserId);
+        VisitedLocation visitedLocation = await _gpsUtil.GetUserLocation(user.UserId);
 
         user.AddToVisitedLocations(visitedLocation);
         _rewardsService.CalculateRewards(user);
@@ -102,13 +102,15 @@ public class TourGuideService : ITourGuideService
     public async Task<List<NearByAttraction>> GetNearByAttractions(VisitedLocation visitedLocation, User user)
     {
         List<NearByAttraction> nearbyAttractions = new ();
-        var userLocation = await GetUserLocation(user);        
-        foreach (var attraction in _gpsUtil.GetAttractions())
+        var userLocation = await GetUserLocation(user);
+        var attractions = await _gpsUtil.GetAttractions();
+        foreach (var attraction in attractions)
         {
                 var attractionLocation = new Location(attraction.Latitude, attraction.Longitude);
                 var distance =  _rewardsService.GetDistance(attractionLocation, userLocation.Location);
                 var rewardWrapper = new RewardCentralWrapper();
-                var reward = rewardWrapper.GetAttractionRewardPoints(attraction.AttractionId, user.UserId);
+
+                var reward =await  rewardWrapper.GetAttractionRewardPoints(attraction.AttractionId, user.UserId);
                 var nearbyAttraction = new NearByAttraction(attraction, userLocation.Location, distance, reward);           
                 nearbyAttractions.Add(nearbyAttraction);
         }   

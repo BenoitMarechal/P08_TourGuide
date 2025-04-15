@@ -11,9 +11,10 @@ namespace TourGuide.LibrairiesWrappers
             _rewardCentral = new ();
         }
 
-        public int GetAttractionRewardPoints(Guid attractionId, Guid userId)
+        public async Task<int> GetAttractionRewardPoints(Guid attractionId, Guid userId)
         {
-            return _rewardCentral.GetAttractionRewardPoints(attractionId, userId);
+            var result=await _rewardCentral.GetAttractionRewardPoints(attractionId, userId);
+            return result;
         }
     }
 }
