@@ -23,7 +23,7 @@ public class TourGuideService : ITourGuideService
     private bool _testMode = true;
 
     public TourGuideService(ILogger<TourGuideService> logger, IGpsUtil gpsUtil, IRewardsService rewardsService, ILoggerFactory loggerFactory)
-    { 
+    {
         _logger = logger;
         _tripPricer = new();
         _gpsUtil = gpsUtil;
@@ -52,8 +52,9 @@ public class TourGuideService : ITourGuideService
 
     public async Task<VisitedLocation> GetUserLocation(User user)
     {
-        var trackedLocation=await TrackUserLocation(user);
-        return user.VisitedLocations.Any() ? user.GetLastVisitedLocation() : trackedLocation;
+        var lastVisited = await user.GetLastVisitedLocation();
+        var trackedLocation = await TrackUserLocation(user);
+        return user.VisitedLocations.Any() ? lastVisited : trackedLocation;
     }
 
     public async Task<User> GetUser(string userName)
@@ -63,6 +64,7 @@ public class TourGuideService : ITourGuideService
 
     public async Task<List<User>> GetAllUsers()
     {
+
         return _internalUserMap.Values.ToList();
     }
 
@@ -101,21 +103,21 @@ public class TourGuideService : ITourGuideService
 
     public async Task<List<NearByAttraction>> GetNearByAttractions(VisitedLocation visitedLocation, User user)
     {
-        List<NearByAttraction> nearbyAttractions = new ();
+        List<NearByAttraction> nearbyAttractions = new();
         var userLocation = await GetUserLocation(user);
         var attractions = await _gpsUtil.GetAttractions();
         foreach (var attraction in attractions)
         {
-                var attractionLocation = new Location(attraction.Latitude, attraction.Longitude);
-                var distance =  _rewardsService.GetDistance(attractionLocation, userLocation.Location);
-                var rewardWrapper = new RewardCentralWrapper();
+            var attractionLocation = new Location(attraction.Latitude, attraction.Longitude);
+            var distance = await _rewardsService.GetDistance(attractionLocation, userLocation.Location);
+            var rewardWrapper = new RewardCentralWrapper();
 
-                var reward =await  rewardWrapper.GetAttractionRewardPoints(attraction.AttractionId, user.UserId);
-                var nearbyAttraction = new NearByAttraction(attraction, userLocation.Location, distance, reward);           
-                nearbyAttractions.Add(nearbyAttraction);
-        }   
+            var reward = await rewardWrapper.GetAttractionRewardPoints(attraction.AttractionId, user.UserId);
+            var nearbyAttraction = new NearByAttraction(attraction, userLocation.Location, distance, reward);
+            nearbyAttractions.Add(nearbyAttraction);
+        }
 
-        return nearbyAttractions.OrderBy(a=>a.Distance).Take(5).ToList();
+        return nearbyAttractions.OrderBy(a => a.Distance).Take(5).ToList();
     }
 
     private void AddShutDownHook()
@@ -167,5 +169,5 @@ public class TourGuideService : ITourGuideService
     {
         return DateTime.UtcNow.AddDays(-new Random().Next(30));
     }
- 
+
 }

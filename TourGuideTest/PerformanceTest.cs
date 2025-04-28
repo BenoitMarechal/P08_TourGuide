@@ -57,6 +57,8 @@ namespace TourGuideTest
 
             foreach (var user in allUsers)
             {
+                //var result= await _fixture.TourGuideService.TrackUserLocation(user);
+                //return result;
                 _fixture.TourGuideService.TrackUserLocation(user);
             }
             stopWatch.Stop();
@@ -70,18 +72,20 @@ namespace TourGuideTest
         [Fact]
         public async void HighVolumeGetRewards()
         {           
+            // preferer async Task
             // On peut ici augmenter le nombre d'utilisateurs pour tester les performances
             _fixture.Initialize(100);
             Stopwatch stopWatch = new Stopwatch();
             stopWatch.Start();
-            Attraction attraction = _fixture.GpsUtil.GetAttractions()[0];
+            var attractions = await _fixture.GpsUtil.GetAttractions();
+
+            Attraction attraction = attractions[0];
+            //OK above
             List<User> allUsers = await _fixture.TourGuideService.GetAllUsers();
 
             allUsers.ForEach(u => 
             u.AddToVisitedLocations(new VisitedLocation(u.UserId, attraction, DateTime.Now)));
-
             allUsers.ForEach(u => _fixture.RewardsService.CalculateRewards(u));
-
 
             foreach (var user in allUsers)
             {

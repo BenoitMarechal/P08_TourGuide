@@ -33,15 +33,16 @@ public class User
         VisitedLocations.Clear();
     }
 
-    public void AddUserReward(UserReward userReward)
+    public async Task AddUserReward(UserReward userReward)
     {
         if (!UserRewards.Exists(r => r.Attraction.AttractionName == userReward.Attraction.AttractionName))
         {
+
             UserRewards.Add(userReward);
         }
     }
 
-    public VisitedLocation GetLastVisitedLocation()
+    public async Task<VisitedLocation> GetLastVisitedLocation()
     {
         return VisitedLocations[^1];
     }

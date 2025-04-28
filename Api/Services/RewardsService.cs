@@ -22,12 +22,12 @@ public class RewardsService : IRewardsService
         _proximityBuffer = _defaultProximityBuffer;
     }
 
-    public void SetProximityBuffer(int proximityBuffer)
+    public async Task SetProximityBuffer(int proximityBuffer)
     {
         _proximityBuffer = proximityBuffer;
     }
 
-    public void SetDefaultProximityBuffer()
+    public async Task SetDefaultProximityBuffer()
     {
         _proximityBuffer = _defaultProximityBuffer;
     }
@@ -62,13 +62,13 @@ public class RewardsService : IRewardsService
     {
         Console.WriteLine("dist");
         Console.WriteLine(GetDistance(attraction, location));
-        var distance = GetDistance(attraction, location);
+        var distance = await GetDistance(attraction, location);
         return distance <= _attractionProximityRange;
     }
 
     private async Task<bool> NearAttraction(VisitedLocation visitedLocation, Attraction attraction)
     {
-        var result = GetDistance(attraction, visitedLocation.Location);
+        var result = await GetDistance(attraction, visitedLocation.Location);
 
         return result <= _proximityBuffer;
     }
@@ -79,7 +79,7 @@ public class RewardsService : IRewardsService
         return result;
     }
 
-    public double GetDistance(Location loc1, Location loc2)
+    public async Task <double> GetDistance(Location loc1, Location loc2)
     {
         double lat1 = Math.PI * loc1.Latitude / 180.0;
         double lon1 = Math.PI * loc1.Longitude / 180.0;

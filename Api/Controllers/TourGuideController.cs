@@ -9,6 +9,10 @@ namespace TourGuide.Controllers;
 [ApiController]
 [Route("[controller]")]
 public class TourGuideController : ControllerBase
+
+    // Finir tour des méthodes en async et check resultats
+
+    
 {
     private readonly ITourGuideService _tourGuideService;
 
@@ -38,7 +42,7 @@ public class TourGuideController : ControllerBase
             return NotFound("User not found");
         }
         var visitedLocation = await _tourGuideService.GetUserLocation(user);
-        var attractions = _tourGuideService.GetNearByAttractions(visitedLocation, await GetUser(userName));
+        var attractions = await _tourGuideService.GetNearByAttractions(visitedLocation, await GetUser(userName));
         return Ok(attractions);
     }
 
@@ -50,7 +54,7 @@ public class TourGuideController : ControllerBase
         {
             return NotFound("User not found");
         }
-        var rewards = _tourGuideService.GetUserRewards(user);
+        var rewards = await _tourGuideService.GetUserRewards(user);
         return Ok(rewards);
     }
 

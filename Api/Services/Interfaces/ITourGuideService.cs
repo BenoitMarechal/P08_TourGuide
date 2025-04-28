@@ -11,10 +11,8 @@ namespace TourGuide.Services.Interfaces
         Tracker Tracker { get; }
 
         Task AddUser(User user);
-        Task<List<User>>GetAllUsers();        
-
-        Task<List<NearByAttraction>> GetNearByAttractions(VisitedLocation visitedLocation, User user);
-       
+        Task<List<User>> GetAllUsers();        
+        Task<List<NearByAttraction>> GetNearByAttractions(VisitedLocation visitedLocation, User user);       
         Task<List<Provider>> GetTripDeals(User user);
         Task<User> GetUser(string userName);
         Task<VisitedLocation> GetUserLocation(User user);
