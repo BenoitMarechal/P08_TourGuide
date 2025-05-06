@@ -1,0 +1,13 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  print-message:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print a message
+        run: echo "Push detected on dev branch!"
