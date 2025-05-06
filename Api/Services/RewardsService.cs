@@ -31,37 +31,72 @@ public class RewardsService : IRewardsService
     {
         _proximityBuffer = _defaultProximityBuffer;
     }
-   
-    public async Task CalculateRewards(User user)
+
+    //public async Task CalculateRewards(User user, List<Attraction> attractions)
+    //{
+    //    count++;
+
+    //    // Create a snapshot of the visited locations to avoid modification issues
+    //    List<VisitedLocation> userLocationsSnapshot = user.VisitedLocations.ToList();
+
+    //    // List<Attraction> attractions = await _gpsUtil.GetAttractions();
+
+    //    foreach (var visitedLocation in userLocationsSnapshot)
+    //    {
+    //        foreach (var attraction in attractions)
+    //        {
+    //            if (!user.UserRewards.Any(r => r.Attraction.AttractionName == attraction.AttractionName))
+    //            {
+    //                var nearAttraction = await NearAttraction(visitedLocation, attraction);
+    //                if (nearAttraction)
+    //                {
+    //                    user.AddUserReward(new UserReward(visitedLocation, attraction, await GetRewardPoints(attraction, user)));
+    //                }
+    //            }
+    //        }
+    //    }
+    //}
+
+    public async Task CalculateRewards(User user, List<Attraction> attractions)
     {
         count++;
+        var userLocationsSnapshot = user.VisitedLocations.ToList();
 
-        // Create a snapshot of the visited locations to avoid modification issues
-        List<VisitedLocation> userLocationsSnapshot = user.VisitedLocations.ToList();
+        // Copy the existing rewards once to reduce repeated calls to .Any
+        var existingRewardNames = new HashSet<string>(
+            user.UserRewards.Select(r => r.Attraction.AttractionName)
+        );
 
-        List<Attraction> attractions = await _gpsUtil.GetAttractions();
+        var rewardTasks = new List<Task>();
 
-        foreach (var visitedLocation in userLocationsSnapshot)
+        foreach (var location in userLocationsSnapshot)
         {
             foreach (var attraction in attractions)
             {
-                if (!user.UserRewards.Any(r => r.Attraction.AttractionName == attraction.AttractionName))
-                {
-                    var nearAttraction = await NearAttraction(visitedLocation, attraction);
-                    if (nearAttraction)
-                    {
-                        user.AddUserReward(new UserReward(visitedLocation, attraction, await GetRewardPoints(attraction, user)));
-                    }
-                }
+                if (existingRewardNames.Contains(attraction.AttractionName))
+                    continue;
+
+                rewardTasks.Add(ProcessReward(location, attraction, user));
             }
+        }
+
+        await Task.WhenAll(rewardTasks);
+    }
+
+    private async Task ProcessReward(VisitedLocation location, Attraction attraction, User user)
+    {
+        if (await NearAttraction(location, attraction))
+        {
+            var points = await GetRewardPoints(attraction, user);
+            user.AddUserReward(new UserReward(location, attraction, points));
         }
     }
 
 
+
     public async Task<bool> IsWithinAttractionProximity(Attraction attraction, Location location)
     {
-        Console.WriteLine("dist");
-        Console.WriteLine(GetDistance(attraction, location));
+
         var distance = await GetDistance(attraction, location);
         return distance <= _attractionProximityRange;
     }

@@ -64,7 +64,6 @@ public class TourGuideService : ITourGuideService
 
     public async Task<List<User>> GetAllUsers()
     {
-
         return _internalUserMap.Values.ToList();
     }
 
@@ -95,9 +94,9 @@ public class TourGuideService : ITourGuideService
     public async Task<VisitedLocation> TrackUserLocation(User user)
     {
         VisitedLocation visitedLocation = await _gpsUtil.GetUserLocation(user.UserId);
-
+        var attractions = await _gpsUtil.GetAttractions();
         user.AddToVisitedLocations(visitedLocation);
-        _rewardsService.CalculateRewards(user);
+        _rewardsService.CalculateRewards(user, attractions);
         return visitedLocation;
     }
 

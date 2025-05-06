@@ -56,9 +56,7 @@ namespace TourGuideTest
             stopWatch.Start();
 
             foreach (var user in allUsers)
-            {
-                //var result= await _fixture.TourGuideService.TrackUserLocation(user);
-                //return result;
+            {               
                await _fixture.TourGuideService.TrackUserLocation(user);
             }
             stopWatch.Stop();
@@ -77,19 +75,31 @@ namespace TourGuideTest
             Stopwatch stopWatch = new Stopwatch();
             stopWatch.Start();
             var attractions = await _fixture.GpsUtil.GetAttractions();
+            var now= DateTime.Now;
 
             Attraction attraction = attractions[0];
-            //OK above
             List<User> allUsers = await _fixture.TourGuideService.GetAllUsers();
 
-            allUsers.ForEach(u => 
-            u.AddToVisitedLocations(new VisitedLocation(u.UserId, attraction, DateTime.Now)));
-            allUsers.ForEach(u => _fixture.RewardsService.CalculateRewards(u));
 
+
+            foreach (var user in allUsers)
+            {
+                user.AddToVisitedLocations(new VisitedLocation(user.UserId, attraction, now));
+            }
+
+            Parallel.ForEach(allUsers, user =>
+            {
+                _fixture.RewardsService.CalculateRewards(user, attractions);
+            });
+
+
+            // ASSERT 
             foreach (var user in allUsers)
             {
                 Assert.True(user.UserRewards.Count > 0);
             }
+
+
             stopWatch.Stop();
             _fixture.TourGuideService.Tracker.StopTracking();
 
