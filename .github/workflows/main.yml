@@ -11,3 +11,22 @@ jobs:
     steps:
       - name: Print a message
         run: echo "Push detected on dev branch!"
+  build:
+      runs-on: ubuntu-latest
+      steps:
+        - name: Checkout repository
+          uses: actions/checkout@v3
+  
+        - name: Setup .NET
+          uses: actions/setup-dotnet@v4
+          with:
+            dotnet-version: '7.0.x'
+  
+        - name: Restore dependencies
+          run: dotnet restore
+  
+        - name: Build solution
+          run: dotnet build --no-restore --configuration Debug
+  
+        - name: Run tests
+          run: dotnet test --no-build --verbosity normal
