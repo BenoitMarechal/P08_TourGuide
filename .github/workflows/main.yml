@@ -30,3 +30,14 @@ jobs:
   
         - name: Run tests
           run: dotnet test --no-build --verbosity normal
+         
+        - name: Package DLLs
+          run: |
+            mkdir -p output
+            zip -r output/dlls.zip bin/Release/*.dll
+    
+        - name: Upload DLLs artifact
+          uses: actions/upload-artifact@v4
+          with:
+            name: dlls-zip
+            path: output/dlls.zip
