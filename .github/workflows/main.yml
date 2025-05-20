@@ -26,7 +26,7 @@ jobs:
           run: dotnet restore
   
         - name: Build solution
-          run: dotnet build --no-restore --configuration Debug
+          run: dotnet build --no-restore --configuration Release
   
         - name: Run tests
           run: dotnet test --no-build --verbosity normal
@@ -34,7 +34,8 @@ jobs:
         - name: Package DLLs
           run: |
             mkdir -p output
-            zip -r output/dlls.zip bin/Release/*.dll
+            find . -name "*.dll" -path "**/bin/Release/**" -exec cp --parents {} output/ \;
+            zip -r output/dlls.zip output
     
         - name: Upload DLLs artifact
           uses: actions/upload-artifact@v4
