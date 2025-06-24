@@ -102,21 +102,46 @@ public class TourGuideService : ITourGuideService
 
     public async Task<List<NearByAttraction>> GetNearByAttractions(VisitedLocation visitedLocation, User user)
     {
-        List<NearByAttraction> nearbyAttractions = new();
+
+        List<(Attraction, double Distance)> allAttractionsWithDistance = new();
+
         var userLocation = await GetUserLocation(user);
         var attractions = await _gpsUtil.GetAttractions();
+
         foreach (var attraction in attractions)
         {
             var attractionLocation = new Location(attraction.Latitude, attraction.Longitude);
-            var distance = await _rewardsService.GetDistance(attractionLocation, userLocation.Location);
-            var rewardWrapper = new RewardCentralWrapper();
 
-            var reward = await rewardWrapper.GetAttractionRewardPoints(attraction.AttractionId, user.UserId);
-            var nearbyAttraction = new NearByAttraction(attraction, userLocation.Location, distance, reward);
-            nearbyAttractions.Add(nearbyAttraction);
+            var distance = await _rewardsService.GetDistance(attractionLocation, userLocation.Location);
+
+           // var rewardWrapper = new RewardCentralWrapper();
+
+           // var reward = await rewardWrapper.GetAttractionRewardPoints(attraction.AttractionId, user.UserId);
+
+           // var nearbyAttraction = new NearByAttraction(attraction, userLocation.Location, distance, 0);
+
+            allAttractionsWithDistance.Add((  attraction, distance));
         }
 
-        return nearbyAttractions.OrderBy(a => a.Distance).Take(5).ToList();
+        var shortList = allAttractionsWithDistance.OrderBy(a => a.Distance).Take(5).ToList();
+
+
+        List<NearByAttraction> shortListWithRewards = new();
+        foreach(var nearByAttraction in shortList)
+        {
+            var rewardWrapper = new RewardCentralWrapper();
+            var reward = await rewardWrapper.GetAttractionRewardPoints(nearByAttraction.Item1.AttractionId, user.UserId);
+            var nearbyAttraction = new NearByAttraction(nearByAttraction.Item1, userLocation.Location, nearByAttraction.Distance, reward);
+            shortListWithRewards.Add(nearbyAttraction);
+
+        }
+
+
+        return shortListWithRewards;
+
+
+
+       // return nearbyAttractions.OrderBy(a => a.Distance).Take(5).ToList();
     }
 
     private void AddShutDownHook()

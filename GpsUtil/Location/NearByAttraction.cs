@@ -3,7 +3,10 @@
     public class NearByAttraction
     {
         public string AttractionName { get; set; }
+        //  public Location AttractionLocation { get; set; }
+
         public Location AttractionLocation { get; set; }
+
         public Location UserLocation { get; set; }
         public double Distance { get; set; }
         public double Reward { get; set; }

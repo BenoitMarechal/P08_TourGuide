@@ -22,6 +22,7 @@ public class TourGuideController : ControllerBase
     }
 
     [HttpGet("getLocation")]
+   
     public async Task<ActionResult<VisitedLocation>> GetLocation([FromQuery] string userName)
     {
         var user =  await _tourGuideService.GetUser(userName);
@@ -34,6 +35,19 @@ public class TourGuideController : ControllerBase
     }
 
     [HttpGet("getNearbyAttractions")]
+    // TODO: Change this method to no longer return a List of Attractions.
+    // Instead: Get the closest five tourist attractions to the user - no matter how far away they are.
+    // Return a new JSON object that contains:
+
+    // Name of Tourist attraction, 
+    // Tourist attractions lat/long, 
+    // The user's location lat/long, 
+    // The distance in miles between the user's location and each of the attractions.
+    // The reward points for visiting each Attraction.
+
+
+
+    //    Note: Attraction reward points can be gathered from RewardsCentral
     public async Task<ActionResult<List<NearByAttraction>>> GetNearbyAttractions([FromQuery] string userName)
     {
         var user = await _tourGuideService.GetUser(userName);
@@ -47,19 +61,21 @@ public class TourGuideController : ControllerBase
     }
 
     [HttpGet("getRewards")]
-    public async Task<ActionResult<List<UserReward>>> GetRewards([FromQuery] string userName)
+    public async Task<ActionResult<IEnumerable<UserReward>>> GetRewards([FromQuery] string userName)
     {
+        
         var user = await _tourGuideService.GetUser(userName);
         if (user == null)
         {
             return NotFound("User not found");
         }
+        
         var rewards = await _tourGuideService.GetUserRewards(user);
         return Ok(rewards);
     }
 
     [HttpGet("getTripDeals")]
-    public async Task<ActionResult<List<Provider>>> GetTripDeals([FromQuery] string userName)
+    public async Task<ActionResult<IEnumerable<Provider>>> GetTripDeals([FromQuery] string userName)
     {        
         var user = await _tourGuideService.GetUser(userName);
         if (user == null)
