@@ -8,7 +8,7 @@ namespace TourGuide.Services;
 public class RewardsService : IRewardsService
 {
     private const double StatuteMilesPerNauticalMile = 1.15077945;
-    private readonly int _defaultProximityBuffer = 10;
+    private readonly int _defaultProximityBuffer = int.MaxValue;
     private int _proximityBuffer;
     private readonly int _attractionProximityRange = 200;
     private readonly IGpsUtil _gpsUtil;

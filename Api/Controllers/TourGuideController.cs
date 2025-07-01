@@ -63,13 +63,11 @@ public class TourGuideController : ControllerBase
     [HttpGet("getRewards")]
     public async Task<ActionResult<IEnumerable<UserReward>>> GetRewards([FromQuery] string userName)
     {
-        
         var user = await _tourGuideService.GetUser(userName);
         if (user == null)
         {
             return NotFound("User not found");
-        }
-        
+        }        
         var rewards = await _tourGuideService.GetUserRewards(user);
         return Ok(rewards);
     }
