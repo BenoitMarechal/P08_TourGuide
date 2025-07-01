@@ -81,10 +81,13 @@ namespace TourGuideTest
             List<User> allUsers = await _fixture.TourGuideService.GetAllUsers();
 
 
-
+            var addTasks = allUsers.Select(user =>
+                user.AddToVisitedLocations(new VisitedLocation(user.UserId, attraction, now))
+               );
+            await Task.WhenAll(addTasks);
             foreach (var user in allUsers)
             {
-                user.AddToVisitedLocations(new VisitedLocation(user.UserId, attraction, now));
+                await user.AddToVisitedLocations(new VisitedLocation(user.UserId, attraction, now));
             }
 
             Parallel.ForEach(allUsers, user =>

@@ -16,7 +16,7 @@ public class Tracker
     {
         _tourGuideService = tourGuideService;
         _logger = logger;
-        Task.Run(() => Run(), _cancellationTokenSource.Token);
+        Task.Run(() =>  Run(), _cancellationTokenSource.Token);
     }
 
     // Assures to shut down the Tracker thread
@@ -36,7 +36,11 @@ public class Tracker
 
             stopwatch.Start();
 
-            users.ForEach(u => _tourGuideService.TrackUserLocation(u));
+            //foreach (var user in users)
+            //{
+            //    await _tourGuideService.TrackUserLocation(user);
+            //}
+            // users.ForEach(u => await _tourGuideService.TrackUserLocation(u));
 
             stopwatch.Stop();
 

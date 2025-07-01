@@ -47,14 +47,19 @@ public class TourGuideService : ITourGuideService
 
     public async Task<List<UserReward>> GetUserRewards(User user)
     {
+        await  TrackUserLocation(user);
         return user.UserRewards;
     }
 
     public async Task<VisitedLocation> GetUserLocation(User user)
     {
         var lastVisited = await user.GetLastVisitedLocation();
+        if(lastVisited != null)
+        {
+            return lastVisited;
+        }
         var trackedLocation = await TrackUserLocation(user);
-        return user.VisitedLocations.Any() ? lastVisited : trackedLocation;
+        return  trackedLocation;
     }
 
     public async Task<User> GetUser(string userName)
@@ -95,7 +100,7 @@ public class TourGuideService : ITourGuideService
     {
         VisitedLocation visitedLocation = await _gpsUtil.GetUserLocation(user.UserId);
         var attractions = await _gpsUtil.GetAttractions();
-        user.AddToVisitedLocations(visitedLocation);
+        await user.AddToVisitedLocations(visitedLocation);
         await _rewardsService.CalculateRewards(user, attractions);
         return visitedLocation;
     }
@@ -120,7 +125,7 @@ public class TourGuideService : ITourGuideService
 
            // var nearbyAttraction = new NearByAttraction(attraction, userLocation.Location, distance, 0);
 
-            allAttractionsWithDistance.Add((  attraction, distance));
+            allAttractionsWithDistance.Add(( attraction, distance));
         }
 
         var shortList = allAttractionsWithDistance.OrderBy(a => a.Distance).Take(5).ToList();
@@ -168,12 +173,12 @@ public class TourGuideService : ITourGuideService
         _logger.LogDebug($"Created {InternalTestHelper.GetInternalUserNumber()} internal test users.");
     }
 
-    private void GenerateUserLocationHistory(User user)
+    private async void GenerateUserLocationHistory(User user)
     {
         for (int i = 0; i < 3; i++)
         {
             var visitedLocation = new VisitedLocation(user.UserId, new Location(GenerateRandomLatitude(), GenerateRandomLongitude()), GetRandomTime());
-            user.AddToVisitedLocations(visitedLocation);
+           await user.AddToVisitedLocations(visitedLocation);
         }
     }
 
